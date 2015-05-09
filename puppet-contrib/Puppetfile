@@ -1,0 +1,13 @@
+#!/usr/bin/env ruby
+#^syntax detection
+
+forge "https://forgeapi.puppetlabs.com"
+
+# mod, <module name>, <version or tag>, <source>
+mod 'puppetlabs-ntp'
+mod 'puppetlabs-firewall'
+#
+mod 'saz-timezone'
+#
+mod 'razorsedge-cloudera'
+
