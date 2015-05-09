@@ -37,6 +37,7 @@ Vagrant.configure(2) do |config|
   end
 
 ##  if Vagrant.has_plugin?("vagrant-librarian-puppet")
+##    config.librarian_puppet.placeholder_filename = ".MYPLACEHOLDER"
 ##    config.librarian_puppet.puppetfile_dir = "puppet-contrib"
 ##    config.librarian_puppet.resolve_options = { :force => true }
 ##  end
