@@ -2,8 +2,8 @@
 # vi: set ft=ruby :
 
 Vagrant.configure(2) do |config|
-#  config.vm.box = "ubuntu/trusty64"
-  config.vm.box = "puppetlabs/centos-6.6-64-puppet"
+  config.vm.box = "ubuntu/trusty64"
+#  config.vm.box = "puppetlabs/centos-6.6-64-puppet"
 
   # Configure plugins
   unless ENV["VAGRANT_NO_PLUGINS"]
@@ -15,12 +15,12 @@ Vagrant.configure(2) do |config|
 
     # Use landrush to manage DNS entries
     # Check status with : vagrant landrush status
-##    if Vagrant.has_plugin?("landrush")
-##      config.landrush.enabled = true
-##    end
-##    if Vagrant.has_plugin?("vagrant-hostmanager")
-##      config.hostmanager.enabled = true
-##    end
+    if Vagrant.has_plugin?("landrush")
+      config.landrush.enabled = true
+    end
+#    if Vagrant.has_plugin?("vagrant-hostmanager")
+#      config.hostmanager.enabled = true
+#    end
 
     # Need nfs-kernel-server system package on debian/ubuntu host
     if Vagrant.has_plugin?("vagrant-cachier")
@@ -48,7 +48,7 @@ Vagrant.configure(2) do |config|
     manager.vm.hostname = 'cm1.vagrant.dev'
     manager.vm.network :private_network, ip: '192.168.65.11'
     manager.vm.provider :virtualbox do |vb|
-      vb.memory = '2048'
+      vb.memory = '3072'
     end
   end
 
@@ -56,8 +56,8 @@ Vagrant.configure(2) do |config|
     puppet.manifests_path = "puppet/manifests"
     puppet.manifest_file = "site.pp"
     puppet.module_path = [ "puppet/modules", "puppet-contrib/modules"]
-#    puppet.hiera_config_path = "puppet/hiera.yaml"
-    puppet.options="--fileserverconfig=/vagrant/puppet/fileserver.conf --debug"
+    puppet.hiera_config_path = "puppet/hiera.yaml"
+    puppet.options="--fileserverconfig=/vagrant/puppet/fileserver.conf --verbose --summarize"
 
     ## custom facts provided to Puppet
     puppet.facter = {
@@ -65,5 +65,5 @@ Vagrant.configure(2) do |config|
       "is_vagrant" => true,
     }
   end
-
+  # /etc/init.d/cloudera-scm-server-db stop && rm -rf /var/lib/cloudera-scm-server-db/data/* /etc/cloudera-scm-server/db.properties /etc/cloudera-scm-server/db.mgmt.properties && /etc/init.d/cloudera-scm-server-db start
 end
