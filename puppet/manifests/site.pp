@@ -25,9 +25,9 @@ class { 'timezone':
 }
 
 # Firewall stuff
-resources { "firewall":
-  purge => true
-}
+#resources { "firewall":
+#  purge => true
+#}
 
 ##Firewall {
 ##  before  => Class['fw::post'],
@@ -48,7 +48,7 @@ resources { "firewall":
 # ClouderaManager node
 node /^cm\d+.vagrant.dev$/ {
   class { 'cloudera':
-    cm_server_host   => $::hostname,
+    cm_server_host   => $::fqdn,
     install_cmserver => true,
   }
 }
