@@ -2,8 +2,8 @@
 # vi: set ft=ruby :
 
 Vagrant.configure(2) do |config|
-#  config.vm.box = "ubuntu/trusty64"
-  config.vm.box = "puppetlabs/centos-6.6-64-puppet"
+  config.vm.box = "ubuntu/trusty64"
+#  config.vm.box = "puppetlabs/centos-6.6-64-puppet"
 
   # Configure plugins
   unless ENV["VAGRANT_NO_PLUGINS"]
@@ -18,29 +18,32 @@ Vagrant.configure(2) do |config|
     if Vagrant.has_plugin?("landrush")
       config.landrush.enabled = true
     end
-#    if Vagrant.has_plugin?("vagrant-hostmanager")
-#      config.hostmanager.enabled = true
-#    end
+    if Vagrant.has_plugin?("vagrant-hostmanager")
+      config.hostmanager.enabled = true
+    end
 
     # Need nfs-kernel-server system package on debian/ubuntu host
     if Vagrant.has_plugin?("vagrant-cachier")
       config.cache.scope = :box
-      config.cache.synced_folder_opts = {
-        type: :nfs,
+#      config.cache.synced_folder_opts = {
+#        type: :nfs,
         # The nolock option can be useful for an NFSv3 client that wants to avoid the
         # NLM sideband protocol. Without this option, apt-get might hang if it tries
         # to lock files needed for /var/cache/* operations. All of this can be avoided
         # by using NFSv4 everywhere. Please note that the tcp option is not the default.
-        mount_options: ['rw', 'vers=3', 'tcp', 'nolock']
-      }
+#        mount_options: ['rw', 'vers=3', 'tcp', 'nolock']
+#      }
     end
   end
 
-##  if Vagrant.has_plugin?("vagrant-librarian-puppet")
-##    config.librarian_puppet.placeholder_filename = ".MYPLACEHOLDER"
-##    config.librarian_puppet.puppetfile_dir = "puppet-contrib"
-##    config.librarian_puppet.resolve_options = { :force => true }
-##  end
+#  system ('cd puppet-contrib && librarian-puppet update')
+#  if Vagrant.has_plugin?("vagrant-librarian-puppet")
+#    config.librarian_puppet.placeholder_filename = ".MYPLACEHOLDER"
+#    config.librarian_puppet.puppetfile_dir = "puppet-contrib"
+#    config.librarian_puppet.resolve_options = { :force => true }
+#    config.librarian_puppet.use_v1_api = '1'
+#    config.librarian_puppet.destruct = false
+#  end
 
   config.vm.synced_folder "puppet/files", "/etc/puppet/files"
 
@@ -57,7 +60,7 @@ Vagrant.configure(2) do |config|
     puppet.manifest_file = "site.pp"
     puppet.module_path = [ "puppet/modules", "puppet-contrib/modules"]
     puppet.hiera_config_path = "puppet/hiera.yaml"
-    puppet.options="--fileserverconfig=/vagrant/puppet/fileserver.conf --verbose --summarize"
+    puppet.options="--fileserverconfig=/vagrant/puppet/fileserver.conf --verbose"
 
     ## custom facts provided to Puppet
     puppet.facter = {

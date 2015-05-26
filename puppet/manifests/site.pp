@@ -1,6 +1,8 @@
 #
 #
 #
+$CM_SERVER_HOST='cm1.vagrant.dev'
+
 Exec {
   path => '/usr/local/bin:/usr/bin:/usr/sbin:/bin'
 }
@@ -25,9 +27,9 @@ class { 'timezone':
 }
 
 # Firewall stuff
-#resources { "firewall":
-#  purge => true
-#}
+resources { 'firewall':
+  purge => true
+}
 
 ##Firewall {
 ##  before  => Class['fw::post'],
@@ -47,8 +49,18 @@ class { 'timezone':
 
 # ClouderaManager node
 node /^cm\d+.vagrant.dev$/ {
-  class { 'cloudera':
-    cm_server_host   => $::fqdn,
-    install_cmserver => true,
+
+  if $::osfamily == 'Debian' {
+    include ::apt
   }
+
+  class { '::cloudera::cdh5::repo': }->
+  class { '::cloudera::java5': }->
+  class { '::cloudera::cm5': }->
+  class { '::cloudera::cm5::server': }->
+  class { '::cloudera::cdh5::zookeeper': }->
+  class { '::cloudera::cdh5::hbase': }->
+  class { '::cloudera::cdh5::hue': }
+
+ 
 }
