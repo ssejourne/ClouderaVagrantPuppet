@@ -51,7 +51,7 @@ Vagrant.configure(2) do |config|
     manager.vm.hostname = 'cm1.vagrant.dev'
     manager.vm.network :private_network, ip: '192.168.65.11'
     manager.vm.provider :virtualbox do |vb|
-      vb.memory = '3072'
+      vb.memory = '2048'
     end
   end
 
