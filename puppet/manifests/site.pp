@@ -32,45 +32,49 @@ resources { 'firewall':
   purge => true
 }
 
-##Firewall {
-##  before  => Class['fw::post'],
-##  require => Class['fw::pre'],
-##}
-##
-##class { ['fw::pre', 'fw::post']: }
-##
-##firewall { '100 allow ssh':
-##    chain   => 'INPUT',
-##    state   => ['NEW'],
-##    dport   => '22',
-##    proto   => 'tcp',
-##    action  => 'accept',
-##}  
-##  
-##firewall { '101 allow cmf':
-##  action => accept,
-##  port   => [ 7180, 7182 ],
-##  proto  => tcp,
-##}->
-##firewall { '102 allow hbase':
-##  action => accept,
-##  #port   => [ 2181, 60000, 60010, 60020, 60030 ],
-##  port   => [ 34033, 60000, 60010, 60020, 60030 ],
-##  proto  => tcp,
-##}->
-##firewall { '103 allow zookeeper':
-##  action => accept,
-##  port   => [ 2181 ],
-##  proto  => tcp,
-##}
-##firewall { '104 allow opentsdb':
-##  action => accept,
-##  port   => [ 4242 ],
-##  proto  => tcp,
-##}
+Firewall {
+  before  => Class['fw::post'],
+  require => Class['fw::pre'],
+}
 
-Datanode_host <<| tag == 'hadoop_datanode_host' |>> {
-  notify { "Datanode : $name $ip": }
+class { ['fw::pre', 'fw::post']: }
+
+class { 'firewall': }
+
+firewall { '100 allow ssh':
+    chain   => 'INPUT',
+    state   => ['NEW'],
+    dport   => '22',
+    proto   => 'tcp',
+    action  => 'accept',
+}  
+
+# http://www.cloudera.com/content/cloudera/en/documentation/core/latest/topics/cdh_ig_ports_cdh5.html  
+firewall { '101 allow cmf':
+  action => accept,
+  port   => [ 7180, 7182 ],
+  proto  => tcp,
+}->
+firewall { '102 allow hbase':
+  action => accept,
+  port   => [ 2181, 60000, 60010, 60020, 60030  ],
+  proto  => tcp,
+}->
+firewall { '103 allow zookeeper':
+  action => accept,
+  port   => [ 2181 ],
+  proto  => tcp,
+}->
+firewall { '104 allow opentsdb':
+  action => accept,
+  port   => [ 4242 ],
+  proto  => tcp,
+}->
+firewall { '105 allow hdfs':
+  action => accept,
+# Deprecated : 50470, 50475, 
+  port   => [ 1004, 1006, 8020, 8022, 50010, 50020, 50070, 50075 ],
+  proto  => tcp,
 }
 
 class { 'hadoop':
@@ -103,11 +107,6 @@ class { 'hbase':
 node /^node1.vagrant.dev$/ {
 
   include stdlib
-
-  @@datanode_host{ "${::fqdn}":
-    ip  => $::ipaddress,
-    tag => ['hadoop_datanode_host']
-  }
 
    # HDFS
   include hadoop::namenode

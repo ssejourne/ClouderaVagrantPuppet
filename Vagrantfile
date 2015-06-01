@@ -45,7 +45,7 @@ Vagrant.configure(2) do |config|
       node.vm.network :private_network, ip: "192.168.65.#{i+10}"
       node.vm.network :forwarded_port, guest: 2181, host: "218#{1 + (i - 1)}"
       node.vm.provider :virtualbox do |vb|
-        vb.gui = false
+        vb.gui = true
         vb.memory = '2048'
         vb.customize ["modifyvm", :id, "--cpuexecutioncap", "50"]
       end

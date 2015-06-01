@@ -18,14 +18,15 @@ class fw::post {
     before     => undef,
   }
 
-  firewall { '900 log dropped output chain':
-    chain      => 'OUTPUT',
-    jump       => 'LOG',
-    log_level  => '6',
-    log_prefix => '[IPTABLES OUTPUT] dropped ',
-    proto      => 'all',
-    before     => undef,
-  }
+# I'm too lazy for now to find output trafic
+#  firewall { '900 log dropped output chain':
+#    chain      => 'OUTPUT',
+#    jump       => 'LOG',
+#    log_level  => '6',
+#    log_prefix => '[IPTABLES OUTPUT] dropped ',
+#    proto      => 'all',
+#    before     => undef,
+#  }
 
   firewall { '910 deny all other input requests':
     chain  => 'INPUT',
@@ -41,10 +42,10 @@ class fw::post {
     before => undef,
   }
 
-  firewall { '910 deny all other output requests':
-    chain  => 'OUTPUT',
-    action => 'drop',
-    proto  => 'all',
-    before => undef,
-  }
+#  firewall { '910 deny all other output requests':
+#    chain  => 'OUTPUT',
+#    action => 'drop',
+#    proto  => 'all',
+#    before => undef,
+#  }
 }
