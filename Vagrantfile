@@ -4,6 +4,7 @@
 Vagrant.configure(2) do |config|
   config.vm.box = "ubuntu/trusty64"
 #  config.vm.box = "puppetlabs/centos-6.6-64-puppet"
+  config.ssh.forward_agent = true
 
   # Configure plugins
   unless ENV["VAGRANT_NO_PLUGINS"]
@@ -36,22 +37,18 @@ Vagrant.configure(2) do |config|
     end
   end
 
-#  system ('cd puppet-contrib && librarian-puppet update')
-#  if Vagrant.has_plugin?("vagrant-librarian-puppet")
-#    config.librarian_puppet.placeholder_filename = ".MYPLACEHOLDER"
-#    config.librarian_puppet.puppetfile_dir = "puppet-contrib"
-#    config.librarian_puppet.resolve_options = { :force => true }
-#    config.librarian_puppet.use_v1_api = '1'
-#    config.librarian_puppet.destruct = false
-#  end
-
   config.vm.synced_folder "puppet/files", "/etc/puppet/files"
 
-  config.vm.define "cm1" do |manager|
-    manager.vm.hostname = 'cm1.vagrant.dev'
-    manager.vm.network :private_network, ip: '192.168.65.11'
-    manager.vm.provider :virtualbox do |vb|
-      vb.memory = '2048'
+  (1..3).each do |i|
+    config.vm.define "node#{i}" do |node|
+      node.vm.hostname = "node#{i}.vagrant.dev"
+      node.vm.network :private_network, ip: "192.168.65.#{i+10}"
+      node.vm.network :forwarded_port, guest: 2181, host: "218#{1 + (i - 1)}"
+      node.vm.provider :virtualbox do |vb|
+        vb.gui = false
+        vb.memory = '2048'
+        vb.customize ["modifyvm", :id, "--cpuexecutioncap", "50"]
+      end
     end
   end
 
@@ -68,5 +65,4 @@ Vagrant.configure(2) do |config|
       "is_vagrant" => true,
     }
   end
-  # /etc/init.d/cloudera-scm-server-db stop && rm -rf /var/lib/cloudera-scm-server-db/data/* /etc/cloudera-scm-server/db.properties /etc/cloudera-scm-server/db.mgmt.properties && /etc/init.d/cloudera-scm-server-db start
 end

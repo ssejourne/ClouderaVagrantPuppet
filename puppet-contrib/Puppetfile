@@ -9,5 +9,14 @@ mod 'puppetlabs-firewall'
 #
 mod 'saz-timezone'
 #
-mod 'razorsedge-cloudera'
+#mod 'razorsedge-cloudera'
+#
+mod 'cesnet-site_hadoop',
+  :git => 'git://github.com/MetaCenterCloudPuppet/cesnet-site_hadoop.git'
+mod 'cesnet-hadoop',
+  :git => 'git://github.com/MetaCenterCloudPuppet/cesnet-hadoop.git'
+mod 'cesnet-zookeeper',
+  :git => 'git://github.com/MetaCenterCloudPuppet/cesnet-zookeeper.git'
+mod 'cesnet-hbase',
+  :git => 'git://github.com/MetaCenterCloudPuppet/cesnet-hbase.git'
 

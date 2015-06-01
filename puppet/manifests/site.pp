@@ -1,7 +1,8 @@
 #
 #
 #
-$CM_SERVER_HOST='cm1.vagrant.dev'
+$CM_SERVER_HOST='node1.vagrant.dev'
+$opentsdb_version = '2.1.0'
 
 Exec {
   path => '/usr/local/bin:/usr/bin:/usr/sbin:/bin'
@@ -68,30 +69,78 @@ resources { 'firewall':
 ##  proto  => tcp,
 ##}
 
-# ClouderaManager node
-node /^cm\d+.vagrant.dev$/ {
+Datanode_host <<| tag == 'hadoop_datanode_host' |>> {
+  notify { "Datanode : $name $ip": }
+}
 
-  if $::osfamily == 'Debian' {
-    class { '::apt':
-      apt_update_frequency => 'always',
-    }
+class { 'hadoop':
+  hdfs_hostname => $::fqdn,
+  yarn_hostname => $::fqdn,
+  slaves => [ $::fqdn, "127.0.1.1", "127.0.0.1" ],
+#  frontends => [ $::fqdn ],
+  # security needs to be disabled explicitly by using empty string
+  realm => '',
+  properties => {
+    'dfs.replication' => 1,
+  },
+  perform => false,
+}
+
+class { 'hbase':
+  hdfs_hostname => $::fqdn,
+  master_hostname => $::fqdn,
+  zookeeper_hostnames => [ $::fqdn ],
+  external_zookeeper => true,
+  slaves => [ $::fqdn ],
+  frontends => [ $::fqdn ],
+  realm => '',
+  features => {
+    hbmanager => true,
+  },
+}
+
+# node conf
+node /^node1.vagrant.dev$/ {
+
+  include stdlib
+
+  @@datanode_host{ "${::fqdn}":
+    ip  => $::ipaddress,
+    tag => ['hadoop_datanode_host']
   }
 
-  class { '::cloudera::cm5::repo': }->
-  class { '::cloudera::java5': }->
-  class { '::cloudera::cm5':
-#    server_host => $CM_SERVER_HOST,
-  }->
-  class { '::cloudera::cm5::server': }
+   # HDFS
+  include hadoop::namenode
+  # YARN
+  include hadoop::resourcemanager
+  # MAPRED
+  include hadoop::historyserver
+  # slave (HDFS)
+  include hadoop::datanode
+  # slave (YARN)
+  include hadoop::nodemanager
+  ## client
+  #include hadoop::frontend
 
-  class { '::cloudera::cdh5::repo': }->
-  class { '::cloudera::cdh5::hbase': }->
-  package { 'hbase-master':
-    ensure => installed,
-  }->
-  service { 'hbase-master':
-    ensure => running,
-  }->
+  include hbase::master
+##  include hbase::zookeeper
+  include hbase::regionserver
+  include hbase::frontend
+  include hbase::hdfs
+
+  class{'site_hadoop':
+    stage => setup,
+  }
+
+  class{'zookeeper':
+    hostnames => [ $::fqdn ],
+    realm => '',
+  }
+
+  Class['hadoop::namenode::service'] -> Class['hbase::hdfs']
+  Class['hadoop::namenode::service'] -> Class['hbase::master::service']
+
+  Class['hbase::master::service'] ->
   service { 'opentsdb' :
     ensure     => running,
     hasrestart => true,
@@ -116,7 +165,7 @@ node /^cm\d+.vagrant.dev$/ {
       }->
       file { '/etc/default/opentsdb':
         ensure   => present,
-        content  => 'JAVA_HOME="/usr/lib/jvm/java-7-oracle-cloudera"',
+        content  => 'JAVA_HOME="/usr/lib/jvm/java-7-openjdk-amd64"',
       } ->
       exec { 'opentsdb-fix-start-daemon':
         command => 'sed -ie \'s/--exec \/bin\/bash -- -c \"\(.*\)\"/--exec \/bin\/bash -- \1/\' /etc/init.d/opentsdb',

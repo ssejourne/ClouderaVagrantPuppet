@@ -1,45 +1,56 @@
 FORGE
   remote: https://forgeapi.puppetlabs.com
   specs:
-    darin-zypprepo (1.0.2)
-    herculesteam-augeasproviders_core (2.1.1)
-      puppetlabs-stdlib (< 5.0.0, >= 3.2.0)
-    herculesteam-augeasproviders_sysctl (2.0.2)
-      herculesteam-augeasproviders_core (< 3.0.0, >= 2.1.0)
-    nanliu-staging (1.0.3)
-    puppetlabs-apt (1.8.0)
-      puppetlabs-stdlib (>= 2.2.1)
-    puppetlabs-concat (1.2.2)
-      puppetlabs-stdlib (< 5.0.0, >= 3.2.0)
+    adrien-alternatives (0.3.0)
     puppetlabs-firewall (1.6.0)
-    puppetlabs-java_ks (1.3.0)
-    puppetlabs-mysql (3.4.0)
-      nanliu-staging (~> 1.0)
-      puppetlabs-stdlib (< 5.0.0, >= 3.2.0)
     puppetlabs-ntp (4.0.0)
       puppetlabs-stdlib (< 5.0.0, >= 4.6.0)
-    puppetlabs-postgresql (4.3.0)
-      puppetlabs-apt (< 2.0.0, >= 1.8.0)
-      puppetlabs-concat (< 2.0.0, >= 1.1.0)
-      puppetlabs-stdlib (~> 4.0)
     puppetlabs-stdlib (4.6.0)
-    razorsedge-cloudera (3.0.0)
-      darin-zypprepo (~> 1.0)
-      herculesteam-augeasproviders_sysctl (~> 2.0)
-      nanliu-staging (~> 1.0)
-      puppetlabs-apt (< 2.0.0, >= 1.4.2)
-      puppetlabs-java_ks (~> 1.0)
-      puppetlabs-mysql (< 4.0.0, >= 2.0.0)
-      puppetlabs-postgresql (< 5.0.0, >= 3.0.0)
-      puppetlabs-stdlib (< 5.0.0, >= 2.3.0)
-      stahnma-epel (~> 1.0)
     saz-timezone (3.3.0)
       puppetlabs-stdlib (>= 2.3.0)
-    stahnma-epel (1.0.2)
+
+GIT
+  remote: git://github.com/MetaCenterCloudPuppet/cesnet-hadoop.git
+  ref: master
+  sha: 09dd80035c8dde471742bcea5f71893e80f724a6
+  specs:
+    cesnet-hadoop (1.0.0)
+      adrien-alternatives (< 1.0.0, >= 0.3.0)
+      puppetlabs-stdlib (< 5.0.0, >= 1.0.0)
+
+GIT
+  remote: git://github.com/MetaCenterCloudPuppet/cesnet-hbase.git
+  ref: master
+  sha: 51c0bcc597fc2f65dd43439f6c8676a3c0fc6b49
+  specs:
+    cesnet-hbase (0.10.1)
+      adrien-alternatives (< 1.0.0, >= 0.3.0)
+      cesnet-hadoop (< 2.0.0, >= 0.9.4)
+      puppetlabs-stdlib (< 5.0.0, >= 1.0.0)
+
+GIT
+  remote: git://github.com/MetaCenterCloudPuppet/cesnet-site_hadoop.git
+  ref: master
+  sha: 99a49bf140da5c6ffd36291445739584cc6bdd38
+  specs:
+    cesnet-site_hadoop (1.0.0)
+      puppetlabs-stdlib (< 5.0.0, >= 1.0.0)
+
+GIT
+  remote: git://github.com/MetaCenterCloudPuppet/cesnet-zookeeper.git
+  ref: master
+  sha: 571f6990d4949a7c2c437d44d8e539475da208f7
+  specs:
+    cesnet-zookeeper (0.9.6)
+      adrien-alternatives (< 1.0.0, >= 0.3.0)
+      puppetlabs-stdlib (< 5.0.0, >= 1.0.0)
 
 DEPENDENCIES
+  cesnet-hadoop (>= 0)
+  cesnet-hbase (>= 0)
+  cesnet-site_hadoop (>= 0)
+  cesnet-zookeeper (>= 0)
   puppetlabs-firewall (>= 0)
   puppetlabs-ntp (>= 0)
-  razorsedge-cloudera (>= 0)
   saz-timezone (>= 0)
 
